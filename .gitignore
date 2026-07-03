@@ -1,0 +1,19 @@
+# Dart / Flutter
+volei_apoio/.dart_tool/
+volei_apoio/build/
+volei_apoio/.flutter-plugins
+volei_apoio/.flutter-plugins-dependencies
+.dart_tool/
+build/
+
+# Go
+volleyball-backend/data/
+*.exe
+*.test
+*.out
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
