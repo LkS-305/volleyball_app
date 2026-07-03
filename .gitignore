@@ -6,6 +6,9 @@ volei_apoio/.flutter-plugins-dependencies
 .dart_tool/
 build/
 
+# FVM (Flutter Version Management) — commit .fvmrc, ignore the SDK cache/symlink
+.fvm/
+
 # Go
 volleyball-backend/data/
 *.exe
