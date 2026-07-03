@@ -15,6 +15,11 @@ volleyball-backend/data/
 *.test
 *.out
 
+# Secrets / local env — never commit credentials
+.env
+volleyball-backend/service-account.json
+volleyball-backend/*-credentials.json
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

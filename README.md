@@ -15,7 +15,7 @@ end-of-session statistics.
 
 ```
 volei_apoio/          Flutter app (scorekeeper UI + game logic)
-volleyball-backend/   Go HTTP service that stores completed matches as JSON
+volleyball-backend/   Go HTTP service; stores play history in JSON or Google Sheets
 ```
 
 ## Flutter app — `volei_apoio/`
@@ -32,22 +32,37 @@ flutter run
 
 ## Go backend — `volleyball-backend/`
 
-A small `net/http` service that validates completed matches and stores them to
-`data/matches.json`. Requires Go 1.22+.
+A small `net/http` service that stores the history of play and computes
+statistics. It records two things behind one `Store` interface:
+
+- **Games** — one per session (teams, rules, date, standings).
+- **Matches** — one per set played within a session, linked by `session_id`.
+
+Two interchangeable backends, picked at start-up via `STORE_BACKEND`:
+
+- `json` — a local `data/sessions.json` file (default, zero setup).
+- `sheets` — a **Google Spreadsheet** with `Games` and `Matches` tabs (free;
+  service-account auth; tabs + headers auto-created on first run).
 
 ```bash
 cd volleyball-backend
-go run .          # listens on :8080
+go mod tidy       # resolve deps + write go.sum (needs internet)
+go run .          # JSON backend by default; listens on :8080
 ```
 
 Endpoints:
 
-| Method | Path            | Description                     |
-| ------ | --------------- | ------------------------------- |
-| POST   | `/matches`      | Create a match                  |
-| GET    | `/matches`      | List matches (newest first)     |
-| GET    | `/matches/{id}` | Fetch a single match by id      |
+| Method | Path              | Description                                 |
+| ------ | ----------------- | ------------------------------------------- |
+| POST   | `/sessions`       | Persist a finished session + its sets       |
+| GET    | `/sessions`       | List sessions (newest first)                |
+| GET    | `/sessions/{id}`  | One session with its sets                   |
+| GET    | `/matches`        | Every set across all sessions               |
+| GET    | `/stats`          | Aggregate stats (per-captain, streaks)      |
+
+See [`volleyball-backend/README.md`](volleyball-backend/README.md) for the full
+Google Sheets setup (service account + sharing the spreadsheet).
 
 > The Flutter app does not call this backend yet — `lib/services/api_service.dart`
-> is a placeholder. Planned next: replace the JSON store with a Google Sheets
-> backend, then wire the app to it.
+> is a placeholder. Next step: `POST /sessions` when the scorekeeper closes a
+> session (the stats screen).
